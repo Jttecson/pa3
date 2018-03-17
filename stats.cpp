@@ -6,9 +6,16 @@
 
 
 stats::stats(PNG & im){
-    
-    
+
+    sumRed = vector<vector<long>>()
+    sumGreen = vector<vector<long>>()
+    sumBlue = vector<vector<long>>()
+    sumsqRed = vector<vector<long>>()
+    sumsqBlue = vector<vector<long>>()
+    sumsqGreen = vector<vector<long>>()
+
     for(int x = 0; x < im.width(); x++){
+        // Keeps track of rgb values in columns, each element corresponding to one column
         vector<long> redCol = vector<long>();
         vector<long> blueCol = vector<long>();
         vector<long> greenCol = vector<long>();
@@ -18,87 +25,175 @@ stats::stats(PNG & im){
         vector<long> greensqCol = vector<long>();
         
         for(int y = 0; y < im.height(); y++){
-            if(y !=0){
-              redCol.push_back(im.getPixel(x,y)->r+sumRed[x-1][y]);
-              blueCol.push_back(im.getPixel(x,y)->b+sumBlue[x-1][y]);
-              greenCol.push_back(im.getPixel(x,y)->g+sumGreen[x-1][y]);
-                
-              redsqCol.push_back(pow(im.getPixel(x,y)->r,2)+sumsqRed[x-1][y]);
-              bluesqCol.push_back(pow(im.getPixel(x,y)->b,2)+sumsqBlue[x-1][y]);
-              greensqCol.push_back(pow(im.getPixel(x,y)->g,2)+sumsqGreen[x-1][y]);
-                
-            }else if(x != 0){
-              redCol.push_back(im.getPixel(x,y)->r+sumRed[x][y-1]);
-              blueCol.push_back(im.getPixel(x,y)->b+sumBlue[x][y-1]);
-              greenCol.push_back(im.getPixel(x,y)->g+sumGreen[x][y-1]);
-                
-              redsqCol.push_back(pow(im.getPixel(x,y)->r,2)+sumsqRed[x][y-1]);
-              bluesqCol.push_back(pow(im.getPixel(x,y)->b,2)+sumsqBlue[x][y-1]);
-              greensqCol.push_back(pow(im.getPixel(x,y)->g,2)+sumsqGreen[x][y-1]);
-                
-            }else{
-                
-              redCol.push_back(im.getPixel(x,y)->r+sumRed[x-1][y]+sumRed[x][y-1]);
-              blueCol.push_back(im.getPixel(x,y)->b+sumBlue[x-1][y]+sumBlue[x][y-1]);
-              greenCol.push_back(im.getPixel(x,y)->g+sumGreen[x-1][y]+sumGreen[x][y-1]);
-                
-              redsqCol.push_back(pow(im.getPixel(x,y)->r,2)+sumsqRed[x-1][y]+sumsqRed[x][y-1]);
-              bluesqCol.push_back(pow(im.getPixel(x,y)->b,2)+sumsqBlue[x-1][y]+sumsqBlue[x][y-1]);
-              greensqCol.push_back(pow(im.getPixel(x,y)->g,2)+sumsqGreen[x-1][y]+sumsqGreen[x][y-1]);
-                
+            // If y == 0, push new column onto vector
+            if(y == 0) {
+                redCol.push_back(im.getPixel(x,y)->r);
+                blueCol.push_back(im.getPixel(x,y)->r);
+                greenCol.push_back(im.getPixel(x,y)->r);
+
+                redsqCol.push_back(im.getPixel(x,y)->r);
+                bluesqCol.push_back(im.getPixel(x,y)->r);
+                greensqCol.push_back(im.getPixel(x,y)->r);
+            // else add in value
+            } else {
+                redCol.at(x) += im.getPixel(x.y)->r;
+                blueCol.at(x) += im.getPixel(x,y)->r;
+                greenCol.at(x) += im.getPixel(x,y)->r;
+
+                redsqCol.at(x) += im.getPixel(x.y)->r;
+                bluesqCol.at(x) += im.getPixel(x,y)->r;
+                greensqCol.at(x) += im.getPixel(x,y)->r;
             }
-            
+            // if x != 0, add rectangle shifted one left + current column total
+            if(x != 0) {
+                sumRed.at(x).push_back(sumRed.at(x-1).at(y) + redCol.at(x));
+                sumBlue.at(x).push_back(sumBlue.at(x-1).at(y) + blueCol.at(x));
+                sumGreen.at(x).push_back(sumGreen.at(x-1).at(y) + greenCol.at(x));
+
+                sumsqRed.at(x).push_back(sumsqRed.at(x-1).at(y) + redsqCol.at(x));
+                sumsqBlue.at(x).push_back(sumsqBlue.at(x-1).at(y) + bluesqCol.at(x));
+                sumsqGreen.at(x).push_back(sumsqGreen.at(x-1).at(y) + greensqCol.at(x));
+            // if x == 0, push column total
+            } else {
+                sumRed.push_back(vector<long>());
+                sumRed.at(x).push_back(redCol.at(x));
+                sumBlue.push_back(vector<long>());
+                sumBlue.at(x).push_back(blueCol.at(x));
+                sumGreen.push_back(vector<long>());
+                sumGreen.at(x).push_back(greenCol.at(x));
+
+                sumsqRed.push_back(vector<long>());
+                sumsqRed.at(x).push_back(redsqCol.at(x));
+                sumsqBlue.push_back(vector<long>());
+                sumsqBlue.at(x).push_back(bluesqCol.at(x));
+                sumsqGreen.push_back(vector<long>());
+                sumsqGreen.at(x).push_back(greensqCol.at(x));
+            }
         }
-        
-        sumRed.push_back(redCol);
-        sumBlue.push_back(blueCol);
-        sumGreen.push_back(greenCol);
-        sumsqRed.push_back(redsqCol);
-        sumsqBlue.push_back(bluesqCol);
-        sumsqGreen.push_back(greensqCol);
     }
-    
 }
 
 
 long stats::getSum(char channel, pair<int,int> ul, pair<int,int> lr){
     long sum = 0;
 
-    if(strcmp(&channel,"r") == 0){
-        sum+= sumRed[lr.first][lr.second] - sumRed[ul.first][lr.second] - sumRed[lr.first][ul.second] + sumRed[ul.first][ul.second] ;
-    }else if(strcmp(&channel,"b") == 0){
-        sum+= sumBlue[lr.first][lr.second] - sumBlue[ul.first][lr.second] - sumBlue[lr.first][ul.second] + sumBlue[ul.first][ul.second] ;
-    }else{
-        sum+= sumGreen[lr.first][lr.second] - sumGreen[ul.first][lr.second] - sumGreen[lr.first][ul.second] + sumGreen[ul.first][ul.second] ;
-    }
+    // True if sections exist which need to be subtracted from total
+    bool left = true;
+    bool top = true;
 
+    bool topAndLeft = false;
+
+    if(ul.first == 0) {
+        left = false;
+    }
+    if(ul.second == 0) {
+        top = false;
+    }
+    if(left && top) {
+        topAndLeft = true;
+    }
+    if(channel == 'r'){
+        sum += sumRed[lr.first][lr.second];
+        if(top) {
+            sum -= sumRed[lr.first][ul.second];
+        }
+        if(left) {
+            sum -= sumRed[ul.first][lr.second];
+        }
+        if(topAndLeft) {
+            sum += sumRed[ul.first][ul.second];
+        }
+    }else if(channel == 'b'){
+        sum += sumBlue[lr.first][lr.second];
+        if(top) {
+            sum -= sumBlue[lr.first][ul.second];
+        }
+        if(left) {
+            sum -= sumBlue[ul.first][lr.second];
+        }
+        if(topAndLeft) {
+            sum += sumBlue[ul.first][ul.second];
+        }
+    }else{
+        sum += sumGreen[lr.first][lr.second];
+        if(top) {
+            sum -= sumGreen[lr.first][ul.second];
+        }
+        if(left) {
+            sum -= sumGreen[ul.first][lr.second];
+        }
+        if(topAndLeft) {
+            sum += sumGreen[ul.first][ul.second];
+        }
+    }
     return sum;
 }
 
 long stats::getSumSq(char channel, pair<int,int> ul, pair<int,int> lr){
     long sum = 0;
-    
-    if(strcmp(&channel,"r") == 0){
-        sum+= sumsqRed[lr.first][lr.second] - sumsqRed[ul.first][lr.second] - sumsqRed[lr.first][ul.second] + sumsqRed[ul.first][ul.second] ;
-    }else if(strcmp(&channel,"b") == 0){
-        sum+= sumsqBlue[lr.first][lr.second] - sumsqBlue[ul.first][lr.second] - sumsqBlue[lr.first][ul.second] + sumsqBlue[ul.first][ul.second] ;
-    }else{
-        sum+= sumsqGreen[lr.first][lr.second] - sumsqGreen[ul.first][lr.second] - sumsqGreen[lr.first][ul.second] + sumsqGreen[ul.first][ul.second] ;
+
+    // True if sections exist which need to be subtracted from total
+    bool left = true;
+    bool top = true;
+
+    bool topAndLeft = false;
+
+    if(ul.first == 0) {
+        left = false;
     }
-    
+    if(ul.second == 0) {
+        top = false;
+    }
+    if(left && top) {
+        topAndLeft = true;
+    }
+    if(channel == 'r'){
+        sum += sumsqRed[lr.first][lr.second];
+        if(top) {
+            sum -= sumsqRed[lr.first][ul.second];
+        }
+        if(left) {
+            sum -= sumsqRed[ul.first][lr.second];
+        }
+        if(topAndLeft) {
+            sum += sumsqRed[ul.first][ul.second];
+        }
+    }else if(channel == 'b'){
+        sum += sumsqBlue[lr.first][lr.second];
+        if(top) {
+            sum -= sumsqBlue[lr.first][ul.second];
+        }
+        if(left) {
+            sum -= sumsqBlue[ul.first][lr.second];
+        }
+        if(topAndLeft) {
+            sum += sumsqBlue[ul.first][ul.second];
+        }
+    }else{
+        sum += sumsqGreen[lr.first][lr.second];
+        if(top) {
+            sum -= sumsqGreen[lr.first][ul.second];
+        }
+        if(left) {
+            sum -= sumsqGreen[ul.first][lr.second];
+        }
+        if(topAndLeft) {
+            sum += sumsqGreen[ul.first][ul.second];
+        }
+    }
     return sum;
 }
 
 long stats::getScore(pair<int,int> ul, pair<int,int> lr){
     long sum = getSum('r', ul, lr) + getSum('b', ul, lr) + getSum('g', ul, lr);
     long sumsq = getSumSq('r', ul, lr) + getSumSq('b', ul, lr) + getSumSq('g', ul, lr);
-    return sum - (pow(sumsq,2)/rectArea(ul,lr));
+    return sumsq - (pow(sum,2)/rectArea(ul,lr));
 }
 RGBAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
     long red = getSum('r', ul, lr)/rectArea(ul,lr);
     long blue = getSum('b', ul, lr)/rectArea(ul,lr);
     long green =getSum('g', ul, lr)/rectArea(ul,lr);
-    
+
     return RGBAPixel(red,blue,green);
 }
 long stats::rectArea(pair<int,int> ul, pair<int,int> lr){
