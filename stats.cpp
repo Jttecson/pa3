@@ -7,14 +7,14 @@
 
 stats::stats(PNG & im){
 
-    sumRed = vector<vector<long>>()
-    sumGreen = vector<vector<long>>()
-    sumBlue = vector<vector<long>>()
-    sumsqRed = vector<vector<long>>()
-    sumsqBlue = vector<vector<long>>()
-    sumsqGreen = vector<vector<long>>()
+    sumRed = vector<vector<long>>();
+    sumGreen = vector<vector<long>>();
+    sumBlue = vector<vector<long>>();
+    sumsqRed = vector<vector<long>>();
+    sumsqBlue = vector<vector<long>>();
+    sumsqGreen = vector<vector<long>>();
 
-    for(int x = 0; x < im.width(); x++){
+    for(unsigned int x = 0; x < im.width(); x++){
         // Keeps track of rgb values in columns, each element corresponding to one column
         vector<long> redCol = vector<long>();
         vector<long> blueCol = vector<long>();
@@ -24,7 +24,7 @@ stats::stats(PNG & im){
         vector<long> bluesqCol = vector<long>();
         vector<long> greensqCol = vector<long>();
         
-        for(int y = 0; y < im.height(); y++){
+        for(unsigned int y = 0; y < im.height(); y++){
             // If y == 0, push new column onto vector
             if(y == 0) {
                 redCol.push_back(im.getPixel(x,y)->r);
@@ -36,11 +36,11 @@ stats::stats(PNG & im){
                 greensqCol.push_back(im.getPixel(x,y)->r);
             // else add in value
             } else {
-                redCol.at(x) += im.getPixel(x.y)->r;
+                redCol.at(x) += im.getPixel(x,y)->r;
                 blueCol.at(x) += im.getPixel(x,y)->r;
                 greenCol.at(x) += im.getPixel(x,y)->r;
 
-                redsqCol.at(x) += im.getPixel(x.y)->r;
+                redsqCol.at(x) += im.getPixel(x,y)->r;
                 bluesqCol.at(x) += im.getPixel(x,y)->r;
                 greensqCol.at(x) += im.getPixel(x,y)->r;
             }

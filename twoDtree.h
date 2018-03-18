@@ -173,6 +173,12 @@ private:
      * @param lr lower right point of current node's rectangle.
      */
     Node * buildTree(stats & s,pair<int,int> ul, pair<int,int> lr);
+    vector<Node*> leafNodes(Node* node);
+    void recursivePrune(Node* node, double pct, int tol);
+    vector<RGBAPixel> leafValues(Node* node);
+    int difference(RGBAPixel a, RGBAPixel b);
+    Node* recursiveCopy(Node* root, const Node* otherRoot);
+    
 
     /* =================== end of private PA3 functions ============== */
 };
