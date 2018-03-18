@@ -177,7 +177,7 @@ private:
     void recursivePrune(Node* node, double pct, int tol);
     vector<RGBAPixel> leafValues(Node* node);
     int difference(RGBAPixel a, RGBAPixel b);
-    Node* recursiveCopy(Node* root, const Node* otherRoot);
+    Node* recursiveCopy(const Node* otherRoot);
     
 
     /* =================== end of private PA3 functions ============== */

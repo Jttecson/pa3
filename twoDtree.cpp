@@ -90,11 +90,12 @@ twoDtree::Node * twoDtree::buildTree(stats & s, pair<int,int> ul, pair<int,int> 
 PNG twoDtree::render(){
     PNG png = PNG(root->lowRight.first + 1, root->lowRight.second + 1);
     vector<Node*> nodes = leafNodes(root);
+    cout<<nodes.size()<<endl;
     for(unsigned int i = 0; i < nodes.size(); i++) {
         for(int x = nodes.at(i)->upLeft.first; x <= nodes.at(i)->lowRight.first; x++) {
             for(int y = nodes.at(i)->upLeft.second; y <= nodes.at(i)->lowRight.second; y++) {
                 RGBAPixel *pixel = png.getPixel(x,y);
-                *pixel = nodes.at(x)->avg;
+                *pixel = nodes.at(i)->avg;
             }
         }
     }
@@ -106,6 +107,9 @@ void twoDtree::prune(double pct, int tol) {
 }
 
 void twoDtree::recursivePrune(twoDtree::Node *node, double pct, int tol) {
+    if(node == NULL) {
+        return;
+    }
     vector<RGBAPixel> pixels = leafValues(node);
     int num = 0;
     int denom = pixels.size();
@@ -174,17 +178,16 @@ void twoDtree::recursiveClear(Node* &subRoot) {
 
 
 void twoDtree::copy(const twoDtree & orig) {
-    root = recursiveCopy(root, orig.root);
+    root = recursiveCopy(orig.root);
 }
 
-twoDtree::Node* twoDtree::recursiveCopy(Node* root, const Node* otherRoot) {
+twoDtree::Node* twoDtree::recursiveCopy(const Node* otherRoot) {
     if(otherRoot == NULL) {
-        root = NULL;
         return NULL;
     }
-    root = new Node(otherRoot->upLeft, otherRoot->lowRight, otherRoot->avg);
-    recursiveCopy(root->left, otherRoot->left);
-    recursiveCopy(root->right, otherRoot->right);
-    return root;
+    Node* node = new Node(otherRoot->upLeft, otherRoot->lowRight, otherRoot->avg);
+    node->left = recursiveCopy(otherRoot->left);
+    node->right = recursiveCopy(otherRoot->right);
+    return node;
 }
 
