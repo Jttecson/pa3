@@ -40,8 +40,6 @@ int main()
 	//where at least 100*X% of pixels are within Y of mean
     cout<<"ASDF"<<endl;
 	tCopy1.prune(0.95, 10000);
-    t2.prune(0.95, 10000);
-    cout<<"ASDF"<<endl;
 	tCopy2.prune(0.95, 10000); 
 	tCopy3.prune(0.95, 3000); 
 	tCopy4.prune(0.95, 3000); 
@@ -51,14 +49,12 @@ int main()
 	PNG ppic2 = tCopy2.render();
 	PNG ppic3 = tCopy3.render();
 	PNG ppic4 = tCopy4.render();
-    PNG ppic5 = t2.render();
     PNG ppic6 = t1.render();
 
 	ppic1.writeToFile("images/prunedstanleytotem.png");
 	ppic2.writeToFile("images/prunedubctotem.png");
 	ppic3.writeToFile("images/prunedremb.png");
 	ppic4.writeToFile("images/prunedrosa.png");
-    ppic5.writeToFile("images/customprunedubctotem.png");
     ppic6.writeToFile("images/custom2.png");
 
 

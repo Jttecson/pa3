@@ -10,7 +10,6 @@
 
 #include "twoDtree.h"
 #include "stats.h"
-#include <stdlib.h>
 #include <cmath>
 
 /* given */
@@ -46,7 +45,7 @@ twoDtree::twoDtree(PNG & imIn){
 
 twoDtree::Node * twoDtree::buildTree(stats & s, pair<int,int> ul, pair<int,int> lr) {
     if(ul == lr) {
-        return NULL;
+        return new Node(ul, lr, s.getAvg(ul, lr));
     }
     // Split the thing
     long min = -1;
@@ -118,7 +117,7 @@ void twoDtree::recursivePrune(twoDtree::Node *node, double pct, int tol) {
             num++;
         }
     }
-    if((double)num / (double)denom > pct) {
+    if(1 - (double)num / (double)denom > pct) {
         recursiveClear(node->left);
         recursiveClear(node->right);
         node->left = NULL;
@@ -131,8 +130,7 @@ void twoDtree::recursivePrune(twoDtree::Node *node, double pct, int tol) {
 }
 
 int twoDtree::difference(RGBAPixel a, RGBAPixel b) {
-    int sum = abs(a.r - b.r) + abs(a.b - b.b) + abs(a.g - b.g);
-    return pow(sum,2);
+    return pow(a.r-b.r,2) + pow(a.b-b.b,2) + pow(a.g-b.g,2);
 }
 
 vector<RGBAPixel> twoDtree::leafValues(Node* node) {
