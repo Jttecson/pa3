@@ -113,11 +113,11 @@ void twoDtree::recursivePrune(twoDtree::Node *node, double pct, int tol) {
     int num = 0;
     int denom = pixels.size();
     for(unsigned int x = 0; x < pixels.size(); x++) {
-        if(difference(node->avg, pixels.at(x)) > tol) {
+        if(difference(node->avg, pixels.at(x)) <= tol) {
             num++;
         }
     }
-    if(1 - (double)num / (double)denom > pct) {
+    if((double)num / (double)denom >= pct) {
         recursiveClear(node->left);
         recursiveClear(node->right);
         node->left = NULL;
