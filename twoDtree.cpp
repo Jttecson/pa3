@@ -170,8 +170,8 @@ void twoDtree::recursiveClear(Node* &subRoot) {
     }
     recursiveClear(subRoot->left);
     recursiveClear(subRoot->right);
-    delete subRoot->left;
-    delete subRoot->right;
+    delete subRoot;
+    subRoot = NULL;
 }
 
 
