@@ -120,6 +120,8 @@ void twoDtree::recursivePrune(twoDtree::Node *node, double pct, int tol) {
     if((double)num / (double)denom >= pct) {
         recursiveClear(node->left);
         recursiveClear(node->right);
+        delete node->left;
+        delete node->right;
         node->left = NULL;
         node->right = NULL;
         return;
