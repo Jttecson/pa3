@@ -6,38 +6,45 @@
 
 
 stats::stats(PNG & im){
+    sumRed = vector<vector<long>>(im.width());
+    sumBlue = vector<vector<long>>(im.width());
+    sumGreen = vector<vector<long>>(im.width());
+
+    sumsqRed = vector<vector<long>>(im.width());
+    sumsqBlue = vector<vector<long>>(im.width());
+    sumsqGreen = vector<vector<long>>(im.width());
 
     // Keeps track of rgb values in columns, each element corresponding to one column
-    vector<long> redCol;
-    vector<long> blueCol;
-    vector<long> greenCol;
+    vector<long> redCol(im.width());
+    vector<long> blueCol(im.width());
+    vector<long> greenCol(im.width());
 
-    vector<long> redsqCol;
-    vector<long> bluesqCol;
-    vector<long> greensqCol;
+    vector<long> redsqCol(im.width());
+    vector<long> bluesqCol(im.width());
+    vector<long> greensqCol(im.width());
     for(unsigned int x = 0; x < im.width(); x++){
         
         for(unsigned int y = 0; y < im.height(); y++){
             // If y == 0, push new column onto vector
             if(y == 0) {
                 RGBAPixel *pixel = im.getPixel(x,y);
-                redCol.push_back(pixel->r);
-                blueCol.push_back(pixel->b);
-                greenCol.push_back(pixel->g);
+                redCol[y] = (pixel->r);
+                blueCol[y] = (pixel->b);
+                greenCol[y] = (pixel->g);
 
-                redsqCol.push_back(pow(pixel->r,2));
-                bluesqCol.push_back(pow(pixel->b,2));
-                greensqCol.push_back(pow(pixel->g,2));
+                redsqCol[y] = (pow(pixel->r,2));
+                bluesqCol[y] = (pow(pixel->b,2));
+                greensqCol[y] = (pow(pixel->g,2));
 
                 // Create new column in sumVectors
-                sumRed.push_back(vector<long>());
-                sumBlue.push_back(vector<long>());
-                sumGreen.push_back(vector<long>());
+                sumRed[x] = vector<long>(im.height());
+                sumBlue[x] = vector<long>(im.height());
+                sumGreen[x] = vector<long>(im.height());
 
-                sumsqRed.push_back(vector<long>());
-                sumsqBlue.push_back(vector<long>());
-                sumsqGreen.push_back(vector<long>());
-            // else add in value
+                sumsqRed[x] = vector<long>(im.height());
+                sumsqBlue[x] = vector<long>(im.height());
+                sumsqGreen[x] = vector<long>(im.height());
+                // else add in value
             } else {
                 RGBAPixel *pixel = im.getPixel(x,y);
                 redCol[x] += pixel->r;
@@ -51,22 +58,22 @@ stats::stats(PNG & im){
             }
             // if x != 0, add rectangle shifted one left + current column total
             if(x != 0) {
-                sumRed[x].push_back(sumRed[x-1][y] + redCol[x]);
-                sumBlue[x].push_back(sumBlue[x-1][y] + blueCol[x]);
-                sumGreen[x].push_back(sumGreen[x-1][y] + greenCol[x]);
+                sumRed[x][y] = (sumRed[x-1][y] + redCol[x]);
+                sumBlue[x][y] = (sumBlue[x-1][y] + blueCol[x]);
+                sumGreen[x][y] = (sumGreen[x-1][y] + greenCol[x]);
 
-                sumsqRed[x].push_back(sumsqRed[x-1][y] + redsqCol[x]);
-                sumsqBlue[x].push_back(sumsqBlue[x-1][y] + bluesqCol[x]);
-                sumsqGreen[x].push_back(sumsqGreen[x-1][y] + greensqCol[x]);
-            // if x == 0, push column total
+                sumsqRed[x][y] = (sumsqRed[x-1][y] + redsqCol[x]);
+                sumsqBlue[x][y] = (sumsqBlue[x-1][y] + bluesqCol[x]);
+                sumsqGreen[x][y] = (sumsqGreen[x-1][y] + greensqCol[x]);
+                // if x == 0, push column total
             } else {
-                sumRed[x].push_back(redCol[x]);
-                sumBlue[x].push_back(blueCol[x]);
-                sumGreen[x].push_back(greenCol[x]);
+                sumRed[x][y] = (redCol[x]);
+                sumBlue[x][y] = (blueCol[x]);
+                sumGreen[x][y] = (greenCol[x]);
 
-                sumsqRed[x].push_back(redsqCol[x]);
-                sumsqBlue[x].push_back(bluesqCol[x]);
-                sumsqGreen[x].push_back(greensqCol[x]);
+                sumsqRed[x][y] = (redsqCol[x]);
+                sumsqBlue[x][y] = (bluesqCol[x]);
+                sumsqGreen[x][y] = (greensqCol[x]);
             }
         }
     }
