@@ -53,19 +53,7 @@ twoDtree::Node * twoDtree::buildTree(stats & s, pair<int,int> ul, pair<int,int> 
     pair<int, int> p2;
     pair<int, int> minPoint1;
     pair<int, int> minPoint2;
-    // Vertical splits
-    for(int x = ul.first; x < lr.first; x++) {
-        p1.first = x;
-        p1.second = lr.second;
-        p2.first = x + 1;
-        p2.second = ul.second;
-        long score = s.getScore(ul, p1) + s.getScore(p2, lr);
-        if(score < min || min == -1) {
-            min = score;
-            minPoint1 = p1;
-            minPoint2 = p2;
-        }
-    }
+
     // Horizontal splits
     for(int y = ul.second; y < lr.second; y++) {
         p1.first = lr.first;
@@ -79,6 +67,21 @@ twoDtree::Node * twoDtree::buildTree(stats & s, pair<int,int> ul, pair<int,int> 
             minPoint2 = p2;
         }
     }
+
+    // Vertical splits
+    for(int x = ul.first; x < lr.first; x++) {
+        p1.first = x;
+        p1.second = lr.second;
+        p2.first = x + 1;
+        p2.second = ul.second;
+        long score = s.getScore(ul, p1) + s.getScore(p2, lr);
+        if(score < min || min == -1) {
+            min = score;
+            minPoint1 = p1;
+            minPoint2 = p2;
+        }
+    }
+
     // Make tree
     Node* newNode = new Node(ul, lr, s.getAvg(ul, lr));
     newNode->left = buildTree(s, ul, minPoint1);
@@ -91,10 +94,10 @@ PNG twoDtree::render(){
     vector<Node*> nodes = leafNodes(root);
     cout<<nodes.size()<<endl;
     for(unsigned int i = 0; i < nodes.size(); i++) {
-        for(int x = nodes.at(i)->upLeft.first; x <= nodes.at(i)->lowRight.first; x++) {
-            for(int y = nodes.at(i)->upLeft.second; y <= nodes.at(i)->lowRight.second; y++) {
+        for(int x = nodes[i]->upLeft.first; x <= nodes[i]->lowRight.first; x++) {
+            for(int y = nodes[i]->upLeft.second; y <= nodes[i]->lowRight.second; y++) {
                 RGBAPixel *pixel = png.getPixel(x,y);
-                *pixel = nodes.at(i)->avg;
+                *pixel = nodes[i]->avg;
             }
         }
     }
@@ -102,28 +105,24 @@ PNG twoDtree::render(){
 }
 
 void twoDtree::prune(double pct, int tol) {
-    recursivePrune(root, pct, tol);
+    recursivePrune(root,pct, tol);
 }
 
-void twoDtree::recursivePrune(twoDtree::Node *node, double pct, int tol) {
+void twoDtree::recursivePrune(twoDtree::Node *node,double pct, int tol) {
     if(node == NULL) {
         return;
     }
-    vector<RGBAPixel> pixels = leafValues(node);
+    vector<Node*> pixels = leafNodes(node);
     int num = 0;
     int denom = pixels.size();
     for(unsigned int x = 0; x < pixels.size(); x++) {
-        if(difference(node->avg, pixels.at(x)) <= tol) {
+        if(difference(node->avg, pixels[x]->avg) <= tol) {
             num++;
         }
     }
     if((double)num / (double)denom >= pct) {
         recursiveClear(node->left);
         recursiveClear(node->right);
-        delete node->left;
-        delete node->right;
-        node->left = NULL;
-        node->right = NULL;
         return;
     } else {
         recursivePrune(node->left, pct, tol);
@@ -135,14 +134,6 @@ int twoDtree::difference(RGBAPixel a, RGBAPixel b) {
     return pow(a.r-b.r,2) + pow(a.b-b.b,2) + pow(a.g-b.g,2);
 }
 
-vector<RGBAPixel> twoDtree::leafValues(Node* node) {
-    vector<RGBAPixel> vec;
-    vector<Node*> nodes = leafNodes(node);
-    for(unsigned int x = 0; x < nodes.size(); x++) {
-        vec.push_back(nodes.at(x)->avg);
-    }
-    return vec;
-}
 
 vector<twoDtree::Node *> twoDtree::leafNodes(Node* node) {
     vector<Node *> vec;
