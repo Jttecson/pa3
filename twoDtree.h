@@ -177,6 +177,8 @@ private:
     void recursivePrune(Node* node, double pct, int tol);
     int difference(RGBAPixel a, RGBAPixel b);
     Node* recursiveCopy(const Node* otherRoot);
+
+    void recursivePruneH(twoDtree::Node *node, twoDtree::Node *noder, int tol, int &num, int &denom);
     
 
     /* =================== end of private PA3 functions ============== */

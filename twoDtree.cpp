@@ -90,6 +90,7 @@ twoDtree::Node * twoDtree::buildTree(stats & s, pair<int,int> ul, pair<int,int> 
 }
 
 PNG twoDtree::render(){
+
     PNG png = PNG(root->lowRight.first + 1, root->lowRight.second + 1);
     vector<Node*> nodes = leafNodes(root);
     cout<<nodes.size()<<endl;
@@ -101,8 +102,11 @@ PNG twoDtree::render(){
             }
         }
     }
-    return png;
+   return png;
 }
+
+
+
 
 void twoDtree::prune(double pct, int tol) {
     recursivePrune(root,pct, tol);
@@ -112,14 +116,15 @@ void twoDtree::recursivePrune(twoDtree::Node *node,double pct, int tol) {
     if(node == NULL) {
         return;
     }
-    vector<Node*> pixels = leafNodes(node);
+  // vector<Node*> pixels = leafNodes(node);
     int num = 0;
-    int denom = pixels.size();
-    for(unsigned int x = 0; x < pixels.size(); x++) {
-        if(difference(node->avg, pixels[x]->avg) <= tol) {
-            num++;
-        }
-    }
+    int denom = 0;
+   recursivePruneH(node,node,tol,num, denom);
+    // for(unsigned int x = 0; x < pixels.size(); x++) {
+    //     if(difference(node->avg, pixels[x]->avg) <= tol) {
+    //         num++;
+    //     }
+    // }
     if((double)num / (double)denom >= pct) {
         recursiveClear(node->left);
         recursiveClear(node->right);
@@ -128,6 +133,21 @@ void twoDtree::recursivePrune(twoDtree::Node *node,double pct, int tol) {
         recursivePrune(node->left, pct, tol);
         recursivePrune(node->right, pct, tol);
     }
+}
+
+void twoDtree::recursivePruneH(twoDtree::Node *node, twoDtree::Node *noder, int tol, int &num, int &denom){
+    if(node== NULL){
+        return;
+    }
+    if(node->left == NULL && node->right == NULL) {
+        if(difference(noder->avg, node->avg) <= tol) {
+            num++;
+        }
+        denom++;
+    }
+    recursivePruneH(node->left, noder,tol, num, denom);
+    recursivePruneH(node->right, noder,tol, num, denom);
+
 }
 
 int twoDtree::difference(RGBAPixel a, RGBAPixel b) {
